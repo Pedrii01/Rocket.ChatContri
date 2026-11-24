@@ -24,6 +24,7 @@ export const useClipboard = (
 	{ clearTime = 2000, onCopySuccess = (): void => undefined, onCopyError = (): void => undefined }: UseClipboardParams = {},
 ): UseClipboardReturn => {
 	const [hasCopied, setHasCopied] = useState(false);
+	const [copyCount, setCopyCount] = useState(0);
 
 	const copy = useStableCallback(async (e?: Event) => {
 		e?.preventDefault();
@@ -31,6 +32,7 @@ export const useClipboard = (
 			await navigator.clipboard.writeText(text);
 			onCopySuccess(e);
 			setHasCopied(true);
+			setCopyCount((count) => count + 1);
 		} catch (e) {
 			if (e instanceof Error) {
 				onCopyError(e);
@@ -51,7 +53,7 @@ export const useClipboard = (
 		}, clearTime);
 
 		return () => clearTimeout(timeout);
-	}, [hasCopied, clearTime]);
+	}, [hasCopied, clearTime, copyCount]);
 
 	return { copy, hasCopied };
 };
